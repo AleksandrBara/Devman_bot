@@ -18,16 +18,8 @@ def get_user_reviews(dvmn_token):
         )
         response.raise_for_status()
         reviews = response.json()
+        pprint(reviews)
 
-        status = reviews.get('status')
-
-        if status == 'found':
-          timestamp = reviews['last_attempt_timestamp']
-        elif status == 'timeout':
-          timestamp = reviews['timestamp_to_request']
-
-        for message in response:
-          pprint(response.text)
       except requests.exceptions.HTTPError as err:
         print(f"Возникла ошибка при выполнении HTTP-запроса:\n{err}")
       except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError):
