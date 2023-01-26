@@ -7,14 +7,14 @@ from telegram import Bot
 
 DVMN_URL = 'https://dvmn.org/api/long_polling/'
 
+
 def get_user_reviews(dvmn_token, bot_token, chat_id):
-    # url = 'https://dvmn.org/api/user_reviews/'
     timestamp = time.time()
-    url = DVMN_URL
+    api_url = DVMN_URL
     while True:
       try:
         response = requests.get(
-          url,
+          api_url,
           headers={'Authorization': f'Token {dvmn_token}'},
           params={'timestamp': timestamp},
           timeout=60
@@ -26,20 +26,32 @@ def get_user_reviews(dvmn_token, bot_token, chat_id):
         if status == 'found':
           timestamp = reviews['last_attempt_timestamp']
           result = reviews.get("new_attempts")[0]
-          message = 'Работа проверена'
 
+          title = result['lesson_title']
+          url = result['lesson_url']
+          if result['is_negative']:
+            result = 'Работа не принята. Нужно исправить несколько ошибок.'
+          else:
+            result = 'Все хорошо! Можно приступать к следующему уроку!'
+
+          message = 'Преподаватель проверил работу: [{}]({}) \n {}'.format(
+            title, url, result
+          )
           bot = Bot(token=bot_token)
           bot.send_message(
             chat_id=chat_id,
             text=message,
-            parse_mode="markdown")
+            parse_mode='markdown')
         elif status == 'timeout':
           timestamp = reviews['timestamp_to_request']
 
       except requests.exceptions.HTTPError as err:
         print(f"Возникла ошибка при выполнении HTTP-запроса:\n{err}")
       except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError):
+        time.sleep(240)
         continue
+
+
 
 
 if __name__ == '__main__':
