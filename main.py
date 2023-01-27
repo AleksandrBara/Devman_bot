@@ -49,11 +49,11 @@ def get_user_reviews(dvmn_token, bot_token, chat_id):
 
         except requests.exceptions.HTTPError as err:
             print(f"Возникла ошибка при выполнении HTTP-запроса:\n{err}")
-        except (requests.exceptions.ReadTimeout,
-                requests.exceptions.ConnectionError
-                ):
-            time.sleep(240)
+        except requests.exceptions.ConnectionError:
+            time.sleep(90)
             continue
+        except requests.exceptions.ReadTimeout:
+            pass
 
 
 if __name__ == '__main__':
