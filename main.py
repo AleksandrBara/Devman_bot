@@ -4,11 +4,10 @@ from dotenv import load_dotenv
 import time
 from telegram import Bot
 import logging
-from logging.handlers import RotatingFileHandler
 
 DVMN_URL = 'https://dvmn.org/api/long_polling/'
 
-logger = logging.getLogger()
+
 
 
 class TelegramLogsHandler(logging.Handler):
@@ -84,6 +83,7 @@ if __name__ == '__main__':
 
     bot = Bot(token=bot_token)
 
+    logger = logging.getLogger()
     logger.setLevel(logging.INFO)
     logger.addHandler(TelegramLogsHandler(bot, chat_id))
     logging.info('Бот стартовал!')
